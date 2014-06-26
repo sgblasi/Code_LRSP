@@ -675,11 +675,62 @@ void regImg (mat I1, mat I2, vec tau_old, mat weight, int maxIts, mat *I2Warp, v
 #endif
 
 
+  meshgrid(sizeI(1), sizeI(0), &xCoord, &yCoord);
+  //xCoord -= (int)(sizeI(0) / 2 + 0.5); /// 2.0 + 0.5);
+  //yCoord -= (int)(sizeI(1) / 2 + 0.5); /// 2.0 + 0.5);
+
+  xCoord -= floor((sizeI(0) / 2 + 0.5)); /// 2.0 + 0.5);
+  yCoord -= floor((sizeI(1) / 2 + 0.5)); /// 2.0 + 0.5);
+
+
+
+  //xCoord.raw_print(cout, "xCoord");
+  //yCoord.raw_print(cout, "yCoord");
+
+
+  //xCoord = (int)(xCoord + 0.5);
+  xC = reshape(xCoord, sizeD, 1);
+  yC = reshape(yCoord, sizeD, 1);
+
   for (int i = 1; i <= maxIts; i++) {
     //cout << "i" << i << endl;
 
     warpImg(I2, tau_old, 0, &I2war, OmegaOut);
+
+	//for (int k = 0; k < 6; k++)
+	//{
+	//	for (int l = 0; l<6; l++)
+	//	{
+	//		printf("%.4f ", I2war(k, l));//cout <<std::setw(5)<< LP.submat(0,0,10,10);
+	//	}
+	//	printf("\n");
+	//}
+	//printf("end I2war\n");
+
+
     getGradient(I2war, &I2warpX, &I2warpY, sigma);
+
+	//for (int k = 0; k < 6; k++)
+	//{
+	//	for (int l = 0; l<6; l++)
+	//	{
+	//		printf("%.4f ", I2warpX(k, l));//cout <<std::setw(5)<< LP.submat(0,0,10,10);
+	//	}
+	//	printf("\n");
+	//}
+	//printf("end I2warpX\n");
+
+	//for (int k = 0; k < 6; k++)
+	//{
+	//	for (int l = 0; l<6; l++)
+	//	{
+	//		printf("%.4f ", I2warpY(k, l));//cout <<std::setw(5)<< LP.submat(0,0,10,10);
+	//	}
+	//	printf("\n");
+	//}
+	//printf("end I2warpY\n");
+
+
     //I2warpX = I2war * 1.0023;
     //I2warpY = I2war * 0.9746;
 
@@ -726,22 +777,7 @@ void regImg (mat I1, mat I2, vec tau_old, mat weight, int maxIts, mat *I2Warp, v
 
     y = reshape(I1 - I2war, sizeD, 1);
 
-    meshgrid(sizeI(1), sizeI(0), &xCoord, &yCoord);
-    //xCoord -= (int)(sizeI(0) / 2 + 0.5); /// 2.0 + 0.5);
-    //yCoord -= (int)(sizeI(1) / 2 + 0.5); /// 2.0 + 0.5);
-
-    xCoord -= 3;// round((sizeI(0) / 2)); /// 2.0 + 0.5);
-    yCoord -= 3;// round((sizeI(1) / 2)); /// 2.0 + 0.5);
-
-
-
-    //xCoord.raw_print(cout, "xCoord");
-    //yCoord.raw_print(cout, "yCoord");
-
-
-    //xCoord = (int)(xCoord + 0.5);
-    xC = reshape(xCoord, sizeD, 1);
-    yC = reshape(yCoord, sizeD, 1);
+    
     I2wX = reshape(I2warpX, sizeD, 1);
     I2wY = reshape(I2warpY, sizeD, 1);
 
@@ -764,6 +800,16 @@ void regImg (mat I1, mat I2, vec tau_old, mat weight, int maxIts, mat *I2Warp, v
     //printf("\n ");
     //printf("\n ");
     //X.raw_print(cout, "X");
+
+	//for (int k = 0; k < 6; k++)
+	//{
+	//	for (int l = 0; l<6; l++)
+	//	{
+	//		printf("%.4f ", X(k, l));//cout <<std::setw(5)<< LP.submat(0,0,10,10);
+	//	}
+	//	printf("\n");
+	//}
+	//printf("end X\n");
 
 
     //weight1.raw_print(cout, "weight1");
@@ -875,6 +921,15 @@ void regImg (mat I1, mat I2, vec tau_old, mat weight, int maxIts, mat *I2Warp, v
       dtau(m) = temp;// accu(trans(Xtrans.row(m)) % X.col(n));
     }
 
+	//for (int k = 0; k < 6; k++)
+	//{
+	//	for (int l = 0; l<6; l++)
+	//	{
+	//		printf("%.4f ", I2warpY(k, l));//cout <<std::setw(5)<< LP.submat(0,0,10,10);
+	//	}
+	//	printf("\n");
+	//}
+	//printf("end I2warpY\n");
 
 
     //cout << std::setprecision(16) << dtau << endl;
@@ -981,25 +1036,25 @@ void regMGNC(mat img1, mat img2, vec tau, double numLevel, mat *img2warp, vec *t
       I2 = img2;
     }
 
-	for (int k = 0; k < 6 ; k++)
-	{
-	 for (int l = 0; l<6;l++)
-	   {
-	     printf("%.4f \t", I1(k,l));//cout <<std::setw(5)<< LP.submat(0,0,10,10);
-	 }
-	 printf("\n");
-	}
-	printf("end I1\n");
+	//for (int k = 0; k < 6 ; k++)
+	//{
+	// for (int l = 0; l<6;l++)
+	//   {
+	//     printf("%.4f \t", I1(k,l));//cout <<std::setw(5)<< LP.submat(0,0,10,10);
+	// }
+	// printf("\n");
+	//}
+	//printf("end I1\n");
 
-	for (int k = 0; k < 6; k++)
-	{
-		for (int l = 0; l<6; l++)
-		{
-			printf("%.4f \t", I2(k, l));//cout <<std::setw(5)<< LP.submat(0,0,10,10);
-		}
-		printf("\n");
-	}
-	printf("end I2\n");
+	//for (int k = 0; k < 6; k++)
+	//{
+	//	for (int l = 0; l<6; l++)
+	//	{
+	//		printf("%.4f \t", I2(k, l));//cout <<std::setw(5)<< LP.submat(0,0,10,10);
+	//	}
+	//	printf("\n");
+	//}
+	//printf("end I2\n");
 
 
     if (l == numLevel - 1) {
@@ -1030,18 +1085,41 @@ void regMGNC(mat img1, mat img2, vec tau, double numLevel, mat *img2warp, vec *t
 
       for (int iter = 1; iter <= 50; iter ++) {
         tau_old = tau;
-        //cout << "I1 loop: " << I1.submat(0,0,5,5) << endl;
-        //cout << "I2 loop: " << I2.submat(0,0,5,5) << endl;
-        regImg(I1, I2, tau_old, weight, 1, &img2warpT, &tau, &residue, &OmegaOut);
-    /*    for (int i = 0; i < 6; i++)
-        {
-          for (int j = 0; j < 6; j++) {
-            printf("%f \t", img2warpT(i, j));
-          }
-          printf("\n");
-        }*/
+		
+		//for (int k = 0; k < 6 ; k++)
+		//{
+		// for (int l = 0; l<6;l++)
+		//   {
+		//     printf("%.4f ", I1(k,l));//cout <<std::setw(5)<< LP.submat(0,0,10,10);
+		// }
+		// printf("\n");
+		//}
+		//printf("end I1\n");
 
-        //cout << "\n \n" << endl;
+		//for (int k = 0; k < 6; k++)
+		//{
+		//	for (int l = 0; l<6; l++)
+		//	{
+		//		printf("%.4f ", I2(k, l));//cout <<std::setw(5)<< LP.submat(0,0,10,10);
+		//	}
+		//	printf("\n");
+		//}
+		//printf("end I2\n");
+
+        regImg(I1, I2, tau_old, weight, 1, &img2warpT, &tau, &residue, &OmegaOut);
+		//for (int k = 0; k < 7; k++)
+		//{
+		//	for (int l = 0; l<7; l++)
+		//	{
+		//		printf("%.4f ", img2warpT(k, l));//cout <<std::setw(5)<< LP.submat(0,0,10,10);
+		//	}
+		//	printf("\n");
+		//}
+		//printf("end img2warpT\n");
+
+  //      cout << tau_old << endl;
+
+		//cout << "tau" << tau << endl;
 
         //printf("stop\n");
         //cout << "im2warp loop: " << img2warpT.submat(0,0,5,5) << endl;
@@ -1158,27 +1236,29 @@ void MyModel (mat X, vec isize, Opt options, mat *X_o, mat *L_o, mat *S_o, mat *
     //cout << "ImData" << ImData.subcube(0,0,0,5,5,0) << endl;
     preAlign(ImData, &ImTrans, &tau); // output is not the same as in matlab
 
-	//for (int k = 0; k < 7 ; k++)
-	//{
-	// for (int l = 0; l<7;l++)
-	//   {
-	//     printf("%.4f ", ImData(k,l,0));//cout <<std::setw(5)<< LP.submat(0,0,10,10);
-	// }
-	// printf("\n");
-	//}
-	//printf("end ImData\n");
+	ImTrans = floor(ImTrans + 0.5);
 
-	//for (int k = 0; k < 7; k++)
-	//{
-	//	for (int l = 0; l<7; l++)
-	//	{
-	//		printf("%.4f ", ImTrans(k, l, 0));//cout <<std::setw(5)<< LP.submat(0,0,10,10);
-	//	}
-	//	printf("\n");
-	//}
-	//printf("end ImTrans\n");
+	for (int k = 0; k < 7 ; k++)
+	{
+	 for (int l = 0; l<7;l++)
+	   {
+	     printf("%.4f ", ImData(k,l,0));//cout <<std::setw(5)<< LP.submat(0,0,10,10);
+	 }
+	 printf("\n");
+	}
+	printf("end ImData\n");
 
+	for (int k = 0; k < 7; k++)
+	{
+		for (int l = 0; l<7; l++)
+		{
+			printf("%.4f ", ImTrans(k, l, 0));//cout <<std::setw(5)<< LP.submat(0,0,10,10);
+		}
+		printf("\n");
+	}
+	printf("end ImTrans\n");
 
+	//ImTrans = floor(ImTrans + 0.5);
     //cout << "ImTrans" << ImTrans.subcube(0,0,0,5,5,0) << endl;
 
     for (int i = 0; i < n; i++)
@@ -1199,6 +1279,7 @@ void MyModel (mat X, vec isize, Opt options, mat *X_o, mat *L_o, mat *S_o, mat *
 		for (int i = 0; i < n; i++)
       {
         LS = reshape(L.col(i), isize(0), isize(1)) + reshape(S.col(i), isize(0), isize(1)); 
+		//LS = floor(LS + 0.5);
         XM = reshape(X.col(i), isize(0), isize(1)), tau.col(i);
         //regImg((reshape(L.col(i), isize(0), isize(1)) + reshape(S.col(i), isize(0), isize(1))), reshape(X.col(i), isize(0), isize(1)), tau.col(i), weight, 0, &Iwarp, &tau_temp, &dummy, &OmegaO);
         regImg(LS, XM, tau.col(i), weight, 0, &Iwarp, &tau_temp, &dummy, &OmegaO);
@@ -1210,7 +1291,7 @@ void MyModel (mat X, vec isize, Opt options, mat *X_o, mat *L_o, mat *S_o, mat *
 		// }
 		// printf("\n");
 		//}
-		//printf("end\n");
+		//printf("end Iwarp\n");
 
 		//for (int k = 0; k < 7; k++)
 		//{
@@ -1220,7 +1301,7 @@ void MyModel (mat X, vec isize, Opt options, mat *X_o, mat *L_o, mat *S_o, mat *
 		//	}
 		//	printf("\n");
 		//}
-		//printf("end\n");
+		//printf("end LS\n");
 
 		//for (int k = 0; k < 7; k++)
 		//{
@@ -1230,7 +1311,7 @@ void MyModel (mat X, vec isize, Opt options, mat *X_o, mat *L_o, mat *S_o, mat *
 		//	}
 		//	printf("\n");
 		//}
-		//printf("end\n");
+		//printf("end XM\n");
 
         tau.col(i) = tau_temp;
         Xtau.col(i) = reshape(Iwarp, m, 1);
@@ -1586,17 +1667,17 @@ int main(int argc, char** argv) {
   /*cout << phi_x << endl;
   cout << phi_y << endl;*/
 
-  vec weight = ones(M5.n_elem,1);
+  //vec weight = ones(M5.n_elem,1);
 
-  mat I2Warp, residue, OmegaOut;
-  vec tau_new;
-  //void regImg (mat I1, mat I2, vec tau_old, vec weight, int maxIts, mat *I2Warp, mat *tau_new, mat *residue, mat *OmegaOut)
-  regImg(M5, I2, V6, weight, 50, &I2Warp, &tau_new, &residue, &OmegaOut);
+  //mat I2Warp, residue, OmegaOut;
+  //vec tau_new;
+  ////void regImg (mat I1, mat I2, vec tau_old, vec weight, int maxIts, mat *I2Warp, mat *tau_new, mat *residue, mat *OmegaOut)
+  //regImg(M5, I2, V6, weight, 50, &I2Warp, &tau_new, &residue, &OmegaOut);
 
-  cout << I2Warp << endl;
-  cout << tau_new << endl;
-  cout << residue << endl;
-  cout << OmegaOut << endl;
+  //cout << I2Warp << endl;
+  //cout << tau_new << endl;
+  //cout << residue << endl;
+  //cout << OmegaOut << endl;
 
   //cout << MEDIAN(M5.col(0)) << endl;
 

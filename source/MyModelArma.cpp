@@ -994,6 +994,8 @@ double MEDIAN(vec X)
 {
   double m = 0;
 
+  X = sort(X);
+
   if (floor(X.n_elem / 2.0) == ceil(X.n_elem / 2.0)) 
   {
     m = (X(floor((X.n_elem - 1) / 2.0)) + X(ceil((X.n_elem - 1) / 2.0))) / 2.0;
@@ -1080,9 +1082,10 @@ void regMGNC(mat img1, mat img2, vec tau, double numLevel, mat *img2warp, vec *t
     }
 
     //cout << "weight " << weight.submat(0,0,5,5) << endl;
+	int cnt = 0;
 
     while (1) {
-
+		++cnt;
       for (int iter = 1; iter <= 50; iter ++) {
         tau_old = tau;
 		
@@ -1126,7 +1129,12 @@ void regMGNC(mat img1, mat img2, vec tau, double numLevel, mat *img2warp, vec *t
         weight = (influence(abs(residue), C) + EPS) / (abs(residue) + EPS);
         weight /= max(max(weight));
 
+		double kk = max(abs((tau_old - tau) / (tau + EPS)));
+		printf("kk = %f\n", kk);
         if (max(abs((tau_old - tau) / (tau + EPS))) < 0.01) {
+			
+			printf("Iteration %d last one!\n", iter);
+			
           break;
         }
       }
@@ -1135,15 +1143,38 @@ void regMGNC(mat img1, mat img2, vec tau, double numLevel, mat *img2warp, vec *t
 
       paraTurkey = 4.7 * 1.48 * MEDIAN(abs(reshape(residue - MEDIAN(reshape(residue, residue.n_elem, 1)), residue.n_elem, 1)));
 
+
+	  /*printf("paraTurkey: %f, C = %f\n", paraTurkey, C);
+	  printf("MEDIAN: %f\n", MEDIAN(reshape(residue, residue.n_elem, 1)));*/
+	  //cout << residue << endl;
+	  
+
       if (C >= max(paraTurkey0, paraTurkey)) {
         C /= 2.0;
       }
       else {
+		  /*printf("paraTurkey: %f, C = %f\n", paraTurkey, C);*/
+		  printf("While counter: %d\n", cnt);
         break;
       }
-    }
+	  
+	}
 
   }
+
+  for (int k = 0; k < 7; k++)
+  {
+  	for (int l = 0; l<7; l++)
+  	{
+  		printf("%.4f ", img2warpT(k, l));//cout <<std::setw(5)<< LP.submat(0,0,10,10);
+  	}
+  	printf("\n");
+  }
+  printf("end img2warpT\n");
+
+ cout << "tau" << tau << endl;
+
+ img2warpT = floor(img2warpT + 0.5);
 
   *img2warp = img2warpT;
 
@@ -1167,12 +1198,26 @@ void preAlign(cube ImData, cube *ImTrans, mat *tau_o) {
   {
     cout << "Frame" << i << endl;
     //cout << ImData(5,2,0);
+
+	cout << "ImTrans" << ImTransT.subcube(0, 0, i + 1, 5, 5, i + 1) << endl;
+	cout << "ImData" << ImData.subcube(0, 0, i, 5, 5, i) << endl;
+	cout << "tau_col(i+1)" << tau.col(i + 1) << endl;
+	cout << "ImTrans" << ImTransT.subcube(0, 0, i, 5, 5, i) << endl;
+	cout << "tau_col(i)" << tau.col(i) << endl;
+
     regMGNC(ImTransT.slice(i + 1), ImData.slice(i), tau.col(i + 1), numLevel, &ImTransT.slice(i), &tau_temp, 0);
     tau.col(i) = tau_temp;
 
-    /*cout << "ImData" << ImData.subcube(0,0,i,5,5,i) << endl;
-    cout << "ImTrans" << ImTransT.subcube(0,0,i,5,5,i) << endl;*/
+	
+    
+	cout << "ImTrans" << ImTransT.subcube(0, 0, i + 1, 5, 5, i + 1) << endl;
+	cout << "ImData" << ImData.subcube(0, 0, i, 5, 5, i) << endl;
+	cout << "tau_col(i+1)" << tau.col(i+1) << endl;
+    cout << "ImTrans" << ImTransT.subcube(0,0,i,5,5,i) << endl;
+	cout << "tau_col(i)" << tau.col(i) << endl;
+	
 
+	cout << "break" << endl;
   }
 
   for (int i = IDcenter; i < numFrame; i++) 
@@ -1236,27 +1281,27 @@ void MyModel (mat X, vec isize, Opt options, mat *X_o, mat *L_o, mat *S_o, mat *
     //cout << "ImData" << ImData.subcube(0,0,0,5,5,0) << endl;
     preAlign(ImData, &ImTrans, &tau); // output is not the same as in matlab
 
-	ImTrans = floor(ImTrans + 0.5);
+	//ImTrans = floor(ImTrans + 0.5);
 
-	for (int k = 0; k < 7 ; k++)
-	{
-	 for (int l = 0; l<7;l++)
-	   {
-	     printf("%.4f ", ImData(k,l,0));//cout <<std::setw(5)<< LP.submat(0,0,10,10);
-	 }
-	 printf("\n");
-	}
-	printf("end ImData\n");
+	//for (int k = 0; k < 7 ; k++)
+	//{
+	// for (int l = 0; l<7;l++)
+	//   {
+	//     printf("%.4f ", ImData(k,l,0));//cout <<std::setw(5)<< LP.submat(0,0,10,10);
+	// }
+	// printf("\n");
+	//}
+	//printf("end ImData\n");
 
-	for (int k = 0; k < 7; k++)
-	{
-		for (int l = 0; l<7; l++)
-		{
-			printf("%.4f ", ImTrans(k, l, 0));//cout <<std::setw(5)<< LP.submat(0,0,10,10);
-		}
-		printf("\n");
-	}
-	printf("end ImTrans\n");
+	//for (int k = 0; k < 7; k++)
+	//{
+	//	for (int l = 0; l<7; l++)
+	//	{
+	//		printf("%.4f ", ImTrans(k, l, 0));//cout <<std::setw(5)<< LP.submat(0,0,10,10);
+	//	}
+	//	printf("\n");
+	//}
+	//printf("end ImTrans\n");
 
 	//ImTrans = floor(ImTrans + 0.5);
     //cout << "ImTrans" << ImTrans.subcube(0,0,0,5,5,0) << endl;
